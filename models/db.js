@@ -5,7 +5,7 @@
 var
   mongoose = require('mongoose'),
   readConfig = require('read-config'),
-  config = readConfig('../config/default.json'),
+  config = readConfig('./config/default.json'),
   dbUrl = config.db.Url,
   dbUser = config.db.User,
   dbPassword = config.db.Password;

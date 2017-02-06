@@ -1,15 +1,24 @@
 var async = require('async'),
   needle = require('needle'),
   cheerio = require('cheerio'),
-  config = require('config');
+  MovieTimeModel = require('../models/movieTimeModel'),
+  movieTimeModel = new MovieTimeModel();
 
 var option_url = 'https://tw.movie.yahoo.com'; 
   options = {
     compressed         : true, // sets 'Accept-Encoding' to 'gzip,deflate' 
     follow_max         : 5,    // follow up to five redirects 
     rejectUnauthorized : false  // verify SSL certificate 
-  };
-var index=[];
+  },
+  index = [];
+
+require('../models/db.js').connect(function (err) {
+  if (err) {
+    console.log('db error');
+    throw err;
+  }
+});
+
 async.auto({
   get_index: function (cb) {
     needle.get(option_url, options, function (err, res) {
@@ -30,32 +39,46 @@ async.auto({
     });
   },  
   crawler: ['get_index', function (result, cb) {
-    async.eachLimit(index, 2, function (idx, callback) {
+    async.eachLimit(index, 10, function (idx, callback) {
       var query_url = 'https://tw.movies.yahoo.com/movietime_result.html?id=' + idx;
       needle.get(query_url, options, function (err, res) {
         if (!err && res.statusCode === 200) {
           var $ = cheerio.load(res.body);
-          console.log($('div .text.bulletin h4').text());
-          console.log($('div .text.bulletin h5').text());
-          console.log($('div .text.bulletin p').text());
+          //console.log($('div .text.bulletin h4').text());
+          var name_zh = $('div .text.bulletin h4').text();
+          //console.log($('div .text.bulletin h5').text());
+          var name_en = $('div .text.bulletin h5').text();
+          //console.log($('div .text.bulletin p').text());
+          var release = $('div .text.bulletin p').text();
 
-         $('div .row-container').each(function (i, elm) {
-           movies = [];
-           text = $(elm).text();
-           val = $(elm).val();
-           text.trim().split(/\n/).forEach(function (t) {
-             if (t !== ' ') {
-               movies.push(t);
-             }
-           });
-
-           console.log('theater: %s', movies);
-         });
-         callback();
+          $('div .row-container').each(function (i, elm) {
+            var movies = {};
+            var theater_info = {};
+            theatersInfo = $(elm).text().trim().split(/\n/);
+            /*
+            text.trim().split(/\n/).forEach(function (t) {
+              if (t !== ' ') {
+                movies.push(t);
+              }
+            });
+            */
+            movies.name_zh = name_zh;
+            movies.name_en = name_en;
+            movies.release = Date(release.split(':')[1]); 
+            theater_info.name = theatersInfo[0].split(' ')[0];
+            theater_info.tel = theatersInfo[0].split(' ')[1];
+            theater_info.area = '';
+            movies.theater_info = theater_info;
+            movies.movie_time = theatersInfo[3];
+            movieTimeModel.createMovieTime(movies, function (json) {
+              console.log(json);
+            }); 
+            //console.log(JSON.stringify(movies));
+          });
         } else {
           console.log(err);
-          callback(err);
         }
+        callback();
       });
     }, function (err) {
        if (err) {
@@ -69,6 +92,13 @@ async.auto({
   if (err) {
     console.log(err);
   }
+  require('../models/db').disconnect(
+    function (err) {
+      if (err) {
+        console.log(err); 
+      }
+    }
+  );  
   console.log('done');
 });  
 

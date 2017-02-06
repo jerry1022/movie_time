@@ -4,16 +4,17 @@ var express = require('express'),
   bodyParser = require('body-parser'),
   sugar = require('sugar'),
   errorHandler = require('errorhandler'),
-  log4js = require('log4js'),
+  compression = require('compression'),
   http = require('http').Server(app),
   path = require('path'),
   cluster = require('cluster'),
   os = require('os'),
-  config = require('config');
+  readConfig = require('read-config'),
+  config = readConfig('./config/default.json');
 
 // ================================================================================================
 // set working directory is this script basedir
-// ================================================================================================
+// ===============================================================================================+
 process.chdir(__dirname);
 
 // ================================================================================================
@@ -30,21 +31,18 @@ require('./models/db.js').connect(function (err) {
 // configuration
 // =======================================================================================================
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-app.use(crossDomain.allowCrossDomain);
-app.use(token.tokenExchange);
 app.use(compression());
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
-app.use(multer({dest: configstore.all.tmpFolder}));
-app.use(cookieParser());
-app.use(xmlparser());
 //app.use(log4js.connectLogger(log4js.getLogger("http"), {level: 'auto'}));
 app.use(errorHandler());
-app.use(configstore.all.ctxPath, router);
+//app.use(configstore.all.ctxPath, router);
 
 // ===================================================
 // routes
 // ===================================================
+var movietime = require('./routes/movietime');
+
 router.use(function (req, res, next) {
   var error = '',
     json = {},
@@ -53,7 +51,6 @@ router.use(function (req, res, next) {
       user_id: req.get('user-id'),
       sign: req.get('sign'),
       token_pass: req.get('token_pass'),
-      is_cloud_call: req.get('isCloudCall')
     };
     next();
 });
@@ -63,21 +60,14 @@ router.get('/ping', function (req, res) {
   res.end('__VERSION_INFO');
 });
 
-router.get('/errortest', function (req, res) {
-  var a = {};
-  a.d[2] = 'sparda';
-  console.log(a.d[2]);
-  res.json();
-});
-
 
 // ===================================================================
 // uFile
 // ======================================================================
-router.post('/movietime/create', movietime.create);
-router.get('/movietime/read/:name', movietime.get);
-router.delete('/movietime/delete', movietime.delete);
-router.put('/movietime/update', movietime.update);
+router.post('/movietime/create', movietime.createMovie);
+router.get('/movietime/read/:name', movietime.getMovieTime);
+router.delete('/movietime/delete', movietime.deleteMovie);
+router.put('/movietime/update', movietime.updateMovie);
 
 // ==================================================================================================================================
 // application event
@@ -91,6 +81,6 @@ app.on('close', function (errno) {
 // server start
 // ==================================================================================================
 
-var server = http.listen(config.http.port, function () {
+var server = http.listen(config.http.Port, function () {
   console.log('Express server listening on port %d in %s mode...', server.address().port, app.settings.env);
 });
