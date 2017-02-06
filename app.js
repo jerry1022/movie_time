@@ -32,11 +32,17 @@ require('./models/db.js').connect(function (err) {
 // =======================================================================================================
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 app.use(compression());
-app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ type: 'application/*+json' }))
+
+// parse some custom thing into a Buffer
+app.use(bodyParser.raw({ type: 'application/vnd.custom-type' }))
+
+// parse an HTML body into a string
+app.use(bodyParser.text({ type: 'text/html' }))
 //app.use(log4js.connectLogger(log4js.getLogger("http"), {level: 'auto'}));
 app.use(errorHandler());
 //app.use(configstore.all.ctxPath, router);
+app.use(router);
 
 // ===================================================
 // routes
@@ -52,20 +58,17 @@ router.use(function (req, res, next) {
       sign: req.get('sign'),
       token_pass: req.get('token_pass'),
     };
+  
     next();
-});
-
-// URL to check process is live.
-router.get('/ping', function (req, res) {
-  res.end('__VERSION_INFO');
 });
 
 
 // ===================================================================
-// uFile
+// API 
 // ======================================================================
 router.post('/movietime/create', movietime.createMovie);
-router.get('/movietime/read/:name', movietime.getMovieTime);
+router.get('/movietime/getmovie/:movie', movietime.getMovieTime);
+router.get('/movietime/gettheater/:theater', movietime.getTheaterMovies);
 router.delete('/movietime/delete', movietime.deleteMovie);
 router.put('/movietime/update', movietime.updateMovie);
 
@@ -73,7 +76,10 @@ router.put('/movietime/update', movietime.updateMovie);
 // application event
 // =================================================================================================================================
 app.on('close', function (errno) {
-  require('./models/db').disconnect(function (err) {console.log(errno + ' ' + err); });
+  require('./models/db').disconnect(
+    function (err) {
+       console.log(err); 
+    });
 });
 
 

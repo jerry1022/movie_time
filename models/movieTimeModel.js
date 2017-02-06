@@ -41,11 +41,35 @@ MovieTimeModel.prototype.updateMovieTime = function (data, callback) {
 };
 
 MovieTimeModel.prototype.getMovieTime = function (data, callback) {
-  //TO-DO
+  this.movieTimeModel.find(
+    data
+  )
+  .lean()
+  .exec(function (err, docs) {
+    if (err) {
+      console.log(err);
+    } else if (!docs) {
+      callback(null);
+    } else { 
+      callback(JSON.stringify(docs));
+    }
+  });
 };
 
-MovieTimeModel.prototype.getTheaterMovie = function (data, callback) {
-  //TO-DO
+MovieTimeModel.prototype.getTheaterMovies = function (data, callback) {
+   this.movieTimeModel.find(
+    data
+  )
+  .lean()
+  .exec(function (err, docs) {
+    if (err) {
+      console.log(err);
+    } else if (!docs) {
+      callback(null);
+    } else { 
+      callback(JSON.stringify(docs));
+    }
+  });
 };
 
 
