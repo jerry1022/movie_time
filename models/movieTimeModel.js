@@ -54,7 +54,7 @@ MovieTimeModel.prototype.getMovieTime = function (data, callback) {
     } else if (!docs) {
       callback(null);
     } else { 
-      callback(JSON.stringify(docs));
+      callback(docs);
     }
   });
 };
@@ -72,7 +72,7 @@ MovieTimeModel.prototype.getTheaterMovies = function (data, callback) {
     } else if (!docs) {
       callback(null);
     } else { 
-      callback(JSON.stringify(docs));
+      callback(docs);
     }
   });
 };
