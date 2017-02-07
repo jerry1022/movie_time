@@ -43,7 +43,18 @@ var crawler = function (cronJob) {
         }
       });
     },  
-    crawler: ['get_index', function (result, cb) {
+    rmOldData: function (cb) {
+      console.log('Remove old data');
+      movieTimeModel.removeMovieTime({}, function (err) {
+        if (err) {
+          cb(err);
+        } else {
+          console.log('Remove Done');
+          cb(null);
+        }
+      }); 
+    },
+    crawler: ['get_index', 'rmOldData', function (result, cb) {
       async.eachLimit(index, 10, function (idx, callback) {
         var query_url = 'https://tw.movies.yahoo.com/movietime_result.html?id=' + idx;
         needle.get(query_url, options, function (err, res) {

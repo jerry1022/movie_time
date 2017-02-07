@@ -6,7 +6,7 @@ var MovieTimeSchema = new db.Schema({
   movie_id: {type: String, unique: true, default: function () {
     return uid(32);
   }},
-  name_zh: {type: String, required: true},
+  name_zh: {type: String, require: true},
   name_en: {type: String},
   release: {type: Date},
   theater_info: {},
@@ -20,6 +20,7 @@ function MovieTimeModel() {
 }; 
 
 MovieTimeModel.prototype.createMovieTime = function (data, callback) {
+  var json = {};
   this.movieTimeModel.create(
     data,
     function (err, docs) {
@@ -27,7 +28,7 @@ MovieTimeModel.prototype.createMovieTime = function (data, callback) {
         console.error(err);
       } else {
         json = docs;
-        json = JSON.parse(JSON.stringify(json));
+        //json = JSON.parse(JSON.stringify(json));
       }
       console.log(json);
       callback(json);
@@ -74,6 +75,20 @@ MovieTimeModel.prototype.getTheaterMovies = function (data, callback) {
       callback(JSON.stringify(docs));
     }
   });
+};
+
+MovieTimeModel.prototype.removeMovieTime = function (data, callback) {
+   this.movieTimeModel.remove(
+    data
+   )
+    .exec(function (err) {
+    if (err) {
+      console.log(err);
+      callback(err);
+    } else { 
+      callback(null);
+    }
+   });
 };
 
 
