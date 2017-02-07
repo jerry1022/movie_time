@@ -81,15 +81,18 @@ var crawler = function (cronJob) {
               movies.name_zh = name_zh;
               movies.name_en = name_en;
               movies.release = Date(release.split(':')[1]); 
-              theater_info.name = theatersInfo[0].split(' ')[0];
-              theater_info.tel = theatersInfo[0].split(' ')[1];
+              var theaterInfo = theatersInfo[0].split(' ');
+              var len = theaterInfo.length;
+              theater_info.name = theaterInfo.slice(0, len - 2).join(' ');
+              theater_info.tel = theaterInfo[len-2];
               theater_info.area = '';
               movies.theater_info = theater_info;
               movies.movie_time = theatersInfo[3];
               movieTimeModel.createMovieTime(movies, function (json) {
-                console.log(json);
+                //console.log(json);
+                return;
               }); 
-              //console.log(JSON.stringify(movies));
+              console.log(JSON.stringify(movies));
             });
           } else {
             console.log(err);
