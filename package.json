@@ -23,6 +23,7 @@
     "express": "^4.14.1",
     "mongoose": "^4.8.1",
     "needle": "^1.4.3",
+    "node-schedule": "^1.2.0",
     "read-config": "^2.0.0",
     "sugar": "^2.0.4",
     "uid": "0.0.2"

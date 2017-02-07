@@ -87,6 +87,8 @@ app.on('close', function (errno) {
 // server start
 // ==================================================================================================
 
+require('./jobs/crawler.js').startJob();
+
 var server = http.listen(config.http.Port, function () {
   console.log('Express server listening on port %d in %s mode...', server.address().port, app.settings.env);
 });

@@ -1,0 +1,1 @@
+require('./crawler').crawler(false);
