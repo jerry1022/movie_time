@@ -44,6 +44,8 @@ MovieTimeModel.prototype.getMovieTime = function (data, callback) {
   this.movieTimeModel.find(
     data
   )
+  .select({movie_id: 0, _id: 0, __v: 0})
+  .sort({name_zh: 1})
   .lean()
   .exec(function (err, docs) {
     if (err) {
@@ -60,6 +62,8 @@ MovieTimeModel.prototype.getTheaterMovies = function (data, callback) {
    this.movieTimeModel.find(
     data
   )
+  .select({movie_id: 0, _id: 0, __v: 0})
+  .sort({'theater_info.name': 1})
   .lean()
   .exec(function (err, docs) {
     if (err) {
