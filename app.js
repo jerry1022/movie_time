@@ -47,6 +47,7 @@ app.post('/', linebotParser);
 var exStatus = 0;
 
 bot.on('message', function (event) {
+console.log(JSON.stringify(event));
         if (event.message.text === '看電影') {
 	   exStatus = 1; 
            console.log("看電影");
@@ -64,6 +65,9 @@ bot.on('message', function (event) {
 	       console.log('Error', error);
 	      });
             } else {
+              var user_id = event.source.userId;
+              var replyToken = event.replyToken;
+              console.log("userId:", user_id, replyToken);
               result.forEach(function (movie) {
                 var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n' + '上映日期:' + movie.release;
                 event.reply(movie_info).then(function (data) {
@@ -71,39 +75,44 @@ bot.on('message', function (event) {
  	        }).catch(function (error) {
 	          console.log('Error', error);
 	        });
+                //bot.push(user_id,  movie_info);
                 movie.theater.forEach(function (theater) {
                   var theater_info = '戲院:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
-                  event.reply(theater_info).then(function (data) {
-		    console.log('Success', data);
- 	          }).catch(function (error) {
-	            console.log('Error', error);
-	          });
+//                  event.reply(theater_info);//.then(function (data) {
+		    //console.log('Success', data);
+ 	          //}).catch(function (error) {
+	           // console.log('Error', error);
+	          //});
+                  bot.push(user_id, theater_info);
                 }); 
                 exStatus = 0;
               });
             }
           });
         } else if (exStatus === 2) {
-          movietime.getTheaterMoviesAPI({theater: event.message.text}, function (result) {
-            if (result.length === 0) {
-              event.reply("查無資料").then(function (data) {
-                exStatus = 0;
-		console.log('Success', data);
- 	      }).catch(function (error) {
-               exStatus = 0;
-	       console.log('Error', error);
-	      });
-            } else {
-             result.forEach(function (theater) {
-               event.reply(JSON.stringify(theater)).then(function (data) {
+            var user_id = event.source.userId;
+            var replyToken = event.replyToken;
+            movietime.getTheaterMoviesAPI({theater: event.message.text}, function (result) {
+              if (result.length === 0) {
+                event.reply("查無資料").then(function (data) {
+                  exStatus = 0;
 		  console.log('Success', data);
  	        }).catch(function (error) {
+                 exStatus = 0;
 	         console.log('Error', error);
 	        });
-                exStatus = 0;
-              });
-            }
-          });
+              } else {
+               result.forEach(function (theater) {
+                  var theater_info = '院戲:'+ theater.name + '\nTel:'+ theater.tel;
+                  bot.push(user_id, theater_info);
+                  theater.movies.forEach(function (movie) {
+                    var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n上映日期:' + movie.release + '時刻表:' + movie.time;
+                    bot.push(user_id, movie_info);
+                  });
+                  exStatus = 0;
+               });
+              }
+            });
         } else {
           var defaultText = '請輸入: \n 1．"看電影" 或 "找戲院"\n2. 再輸入您要看的電影名稱或戲院名稱'
     	  event.reply(defaultText).then(function (data) {
@@ -178,6 +187,6 @@ app.on('close', function (errno) {
 
 require('./jobs/crawler.js').startJob();
 
-var server = http.listen(config.http.Port, function () {
+var server = http.listen(config.http.Port || 3000, function () {
   console.log('Express server listening on port %d in %s mode...', server.address().port, app.settings.env);
 });
