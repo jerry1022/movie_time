@@ -72,7 +72,7 @@ bot.on('message', function (event) {
 	          console.log('Error', error);
 	        });
                 movie.theater.forEach(function (theater) {
-                  var theater_info = '片名:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
+                  var theater_info = '戲院:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
                   event.reply(theater_info).then(function (data) {
 		    console.log('Success', data);
  	          }).catch(function (error) {
