@@ -54,16 +54,14 @@ var getMovieTime = function (req, res) {
 var getMovieTimeAPI = function (data, callback) {
   var movie = data.movie,
     address = data.address,
-    condition = {},
     jsonResult = [];
-  if (address === '') {
     condition = {
       $or: [
        {name_zh: new RegExp(movie, 'i')},
        {name_en: new RegExp(movie, 'i')}
       ]
     };
-  } else {
+  if (address !== '') {
     condition = {
       $and: [
         {
