@@ -53,14 +53,32 @@ var getMovieTime = function (req, res) {
 
 var getMovieTimeAPI = function (data, callback) {
   var movie = data.movie,
+    address = data.address,
+    condition = {},
     jsonResult = [];
-  
-  movieTimeModel.getMovieTime({
+  if (address === '') {
+    condition = {
       $or: [
-       {name_zh: new RegExp(movie, "i")},
+       {name_zh: new RegExp(movie, 'i')},
        {name_en: new RegExp(movie, 'i')}
       ]
-      }, function (json) {
+    };
+  } else {
+    condition = {
+      $and: [
+        {
+          'theater_info.address': new RegExp(address, 'i')
+        },
+        {
+           $or: [
+           {name_zh: new RegExp(movie, 'i')},
+           {name_en: new RegExp(movie, 'i')}
+          ]
+        }
+       ]
+     };
+  }
+  movieTimeModel.getMovieTime(condition, function (json) {
     if (json !== null) {
       var movie_info = {
         name_zh: json[0].name_zh,

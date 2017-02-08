@@ -45,12 +45,12 @@ var linebotParser = bot.parser();
 app.post('/', linebotParser); 
 
 var exStatus = 0;
-
+var area = '';
 bot.on('message', function (event) {
 console.log(JSON.stringify(event));
         if (event.message.text === '看電影') {
 	   exStatus = 1; 
-           event.reply("請輪入要看的電影").then(function (data) {
+           event.reply("請輪入要查的區域(ex: 台北 或 全部)").then(function (data) {
 	     console.log('Success', data);
  	   }).catch(function (error) {
 	     console.log('Error', error);
@@ -64,7 +64,17 @@ console.log(JSON.stringify(event));
 	     console.log('Error', error);
 	   });
         } else if (exStatus === 1) {
-	  movietime.getMovieTimeAPI({movie: event.message.text}, function (result) {
+	   exStatus = 3; 
+           if (event.message.text !== '全部') {
+              area = event.message.text;  
+           }
+           event.reply("請輪入要看的電影").then(function (data) {
+	     console.log('Success', data);
+ 	   }).catch(function (error) {
+	     console.log('Error', error);
+	   });
+        } else if (exStatus === 3) {
+	  movietime.getMovieTimeAPI({movie: event.message.text, address: area}, function (result) {
             if (result.length === 0) {
               event.reply("查無資料").then(function (data) {
                 exStatus = 0;
