@@ -46,7 +46,7 @@ MovieTimeModel.prototype.getMovieTime = function (data, callback) {
     data
   )
   .select({movie_id: 0, _id: 0, __v: 0, created_at: 0})
-  .sort({name_zh: 1, release: 1, 'theater_info.tel': 1})
+  .sort({name_zh: 1, release: 1, 'theater.address': 1})
   .lean()
   .exec(function (err, docs) {
     if (err) {

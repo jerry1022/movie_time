@@ -25,6 +25,7 @@ var getMovieTime = function (req, res) {
         if (movie_info.name_zh === movie.name_zh) {
           theater.name = movie.theater_info.name;
           theater.tel = movie.theater_info.tel;
+          theater.address = movie.theater_info.address;
           theater.time = movie.movie_time;
           movie_info.theater.push(theater);
         } else {
@@ -37,6 +38,7 @@ var getMovieTime = function (req, res) {
           }; 
           theater.theater.name = movie.theater_info.name;
           theater.theater.tel = movie.theater_info.tel;
+          theater.address = movie.theater_info.address;
           theater.theater.time = movie.movie_time;
           movie_info.theater.push(theater_info);
         } 
@@ -84,6 +86,7 @@ var getMovieTimeAPI = function (data, callback) {
           }; 
           theater.theater.name = movie.theater_info.name;
           theater.theater.tel = movie.theater_info.tel;
+          theater.address = movie.theater_info.address;
           theater.theater.time = movie.movie_time;
           movie_info.theater.push(theater_info);
         } 
@@ -107,7 +110,7 @@ var getTheaterMovies = function (req, res) {
       var theater_info = {
         name: json[0].theater_info.name,
         tel: json[0].theater_info.tel,
-        area: json[0].theater_info.area,
+        address: json[0].theater_info.address,
         movies: []
       };
       json.forEach(function (theater) {
@@ -124,7 +127,7 @@ var getTheaterMovies = function (req, res) {
           theater_info = {
             name: theater.theater_info.name,
             tel: theater.theater_info.tel,
-            area: theater.theater_info.area,
+            address: theater.theater_info.address,
             movies: []
           }; 
           movie.name_zh = theater.name_zh;
@@ -152,7 +155,7 @@ var getTheaterMoviesAPI = function (data, callback) {
       var theater_info = {
         name: json[0].theater_info.name,
         tel: json[0].theater_info.tel,
-        area: json[0].theater_info.area,
+        address: json[0].theater_info.address,
         movies: []
       };
       json.forEach(function (theater) {
@@ -169,7 +172,7 @@ var getTheaterMoviesAPI = function (data, callback) {
           theater_info = {
             name: theater.theater_info.name,
             tel: theater.theater_info.tel,
-            area: theater.theater_info.area,
+            address: theater.theater_info.address,
             movies: []
           }; 
           movie.name_zh = theater.name_zh;
