@@ -13,3 +13,6 @@ https://twmovietimes.herokuapp.com/movietime/getmovie/{movie_name}
 https://twmovietimes.herokuapp.com/movietime/gettheater/{theater_name}
 
 Enjoy it
+
+linebot @zti3761l add it to search taiwan movie time
+
