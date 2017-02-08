@@ -50,10 +50,19 @@ bot.on('message', function (event) {
 console.log(JSON.stringify(event));
         if (event.message.text === '看電影') {
 	   exStatus = 1; 
-           console.log("看電影");
+           event.reply("請輪入要看的電影").then(function (data) {
+	     console.log('Success', data);
+ 	   }).catch(function (error) {
+	     console.log('Error', error);
+	   });
         } else if (event.message.text === '找戲院') {
            exStatus = 2;
            console.log("找戲院");
+           event.reply("請輪入要查的戲院").then(function (data) {
+	     console.log('Success', data);
+ 	   }).catch(function (error) {
+	     console.log('Error', error);
+	   });
         } else if (exStatus === 1) {
 	  movietime.getMovieTimeAPI({movie: event.message.text}, function (result) {
             if (result.length === 0) {
@@ -70,19 +79,23 @@ console.log(JSON.stringify(event));
               console.log("userId:", user_id, replyToken);
               result.forEach(function (movie) {
                 var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n' + '上映日期:' + movie.release;
+/*
                 event.reply(movie_info).then(function (data) {
 		  console.log('Success', data);
  	        }).catch(function (error) {
 	          console.log('Error', error);
 	        });
-                //bot.push(user_id,  movie_info);
+*/
+                bot.push(user_id,  movie_info);
                 movie.theater.forEach(function (theater) {
                   var theater_info = '戲院:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
-//                  event.reply(theater_info);//.then(function (data) {
-		    //console.log('Success', data);
- 	          //}).catch(function (error) {
-	           // console.log('Error', error);
-	          //});
+/*
+                  event.reply(theater_info);//.then(function (data) {
+		    console.log('Success', data);
+ 	          }).catch(function (error) {
+	            console.log('Error', error);
+	          });
+*/
                   bot.push(user_id, theater_info);
                 }); 
                 exStatus = 0;
@@ -103,7 +116,7 @@ console.log(JSON.stringify(event));
 	        });
               } else {
                result.forEach(function (theater) {
-                  var theater_info = '院戲:'+ theater.name + '\nTel:'+ theater.tel;
+                  var theater_info = '戲院:'+ theater.name + '\n電話:'+ theater.tel;
                   bot.push(user_id, theater_info);
                   theater.movies.forEach(function (movie) {
                     var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n上映日期:' + movie.release + '時刻表:' + movie.time;
@@ -187,6 +200,6 @@ app.on('close', function (errno) {
 
 require('./jobs/crawler.js').startJob();
 
-var server = http.listen(config.http.Port || 3000, function () {
+var server = http.listen(process.env.PORT, function () {
   console.log('Express server listening on port %d in %s mode...', server.address().port, app.settings.env);
 });
