@@ -177,7 +177,7 @@ var crawler = function (cronJob) {
         }
       }); 
     },
-    crawler_unreleased: function (cb) {
+    crawler_unreleased: ['rmOldData', function (result, cb) {
       async.eachLimit(pages, 5, function (idx, callback) {
         var query_url = 'https://tw.movies.yahoo.com/movie_comingsoon.html?p=' + idx;
         needle.get(query_url, options, function (err, res) {
@@ -190,7 +190,8 @@ var crawler = function (cronJob) {
               var movies = {};
               movies.name_zh = $$('h4').text();
               movies.name_en = $$('h5').text();
-              movies.release = Date($$('span').text().split("：")[1]); 
+             // console.log($$('span.date span').text()); 
+              movies.release = $$('span.date span').text(); 
 
               movieTimeModel.createMovieTime(movies, function (json) {
                 //console.log(json);
@@ -210,8 +211,8 @@ var crawler = function (cronJob) {
            cb();
          }
       });
-    },
-    crawler: ['get_index', 'rmOldData', 'crawler_unreleased', function (result, cb) {
+    }],
+    crawler: ['get_index', 'crawler_unreleased', function (result, cb) {
       async.eachLimit(index, 10, function (idx, callback) {
         var query_url = 'https://tw.movies.yahoo.com/movietime_result.html?id=' + idx;
         needle.get(query_url, options, function (err, res) {
@@ -221,7 +222,7 @@ var crawler = function (cronJob) {
             var name_zh = $('div .text.bulletin h4').text();
             //console.log($('div .text.bulletin h5').text());
             var name_en = $('div .text.bulletin h5').text();
-//            console.log($('div .text.bulletin p span.dta').text());
+            //console.log($('div .text.bulletin p span.dta').text());
             var release = $('div .text.bulletin p span.dta').text();
             $('div .row-container').each(function (i, elm) {
               var movies = {};
@@ -236,7 +237,7 @@ var crawler = function (cronJob) {
               */
               movies.name_zh = name_zh;
               movies.name_en = name_en;
-              movies.release = Date(release.split('：')[1]); 
+              movies.release = release; 
 
               var theaterInfo = theatersInfo[0].split(' ');
               var len = theaterInfo.length;
