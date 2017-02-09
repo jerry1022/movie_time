@@ -9,8 +9,12 @@ search the movie time from yahoo movie
 
 demo 
 
+
 https://twmovietimes.herokuapp.com/movietime/getmovie/{movie_name}
+
 https://twmovietimes.herokuapp.com/movietime/gettheater/{theater_name}
+
+https://twmovietimes.herokuapp.com/theater/gettheater?name={theater_name}&address={address}
 
 Enjoy it
 
