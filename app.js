@@ -50,7 +50,7 @@ bot.on('message', function (event) {
 console.log(JSON.stringify(event));
         if (event.message.text === '看電影') {
 	   exStatus = 1; 
-           event.reply("請輪入要查的區域(ex: 台北 或 全部)").then(function (data) {
+           event.reply("請輸入要查的區域(ex: 台北 或 全部)").then(function (data) {
 	     console.log('Success', data);
  	   }).catch(function (error) {
 	     console.log('Error', error);
@@ -58,7 +58,7 @@ console.log(JSON.stringify(event));
         } else if (event.message.text === '找戲院') {
            exStatus = 2;
            console.log("找戲院");
-           event.reply("請輪入要查的戲院").then(function (data) {
+           event.reply("請輸入要查的戲院").then(function (data) {
 	     console.log('Success', data);
  	   }).catch(function (error) {
 	     console.log('Error', error);
@@ -68,7 +68,7 @@ console.log(JSON.stringify(event));
            if (event.message.text !== '全部') {
               area = event.message.text;  
            }
-           event.reply("請輪入要看的電影").then(function (data) {
+           event.reply("請輸入要看的電影").then(function (data) {
 	     console.log('Success', data);
  	   }).catch(function (error) {
 	     console.log('Error', error);
