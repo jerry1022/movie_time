@@ -48,5 +48,23 @@ TheaterModel.prototype.removeTheater = function (data, callback) {
    });
 };
 
+TheaterModel.prototype.getTheater = function (data, callback) {
+  this.theaterModel.find(
+    data
+  )
+  .select({_id: 0, __v: 0, created_at: 0})
+  .sort({address: 1})
+  .lean()
+  .exec(function (err, docs) {
+    if (err) {
+      console.log(err);
+    } else if (docs.length === 0) {
+      callback(null);
+    } else {
+      callback(docs);
+    }
+  });
+};
+
 module.exports = TheaterModel;
 

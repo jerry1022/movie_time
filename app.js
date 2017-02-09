@@ -15,6 +15,7 @@ var express = require('express'),
 //routes import 
 //================================================================================================
 var movietime = require('./routes/movietime');
+var theater = require('./routes/theater');
   
 // ================================================================================================
 // set working directory is this script basedir
@@ -192,6 +193,8 @@ router.get('/movietime/getmovie/:movie', movietime.getMovieTime);
 router.get('/movietime/gettheater/:theater', movietime.getTheaterMovies);
 router.delete('/movietime/delete', movietime.deleteMovie);
 router.put('/movietime/update', movietime.updateMovie);
+
+router.get('/theater/gettheater', theater.getTheater);
 
 // ==================================================================================================================================
 // application event
