@@ -1,4 +1,5 @@
 var
+  sugar = require('sugar'),
   MovieTimeModel = require('../models/movieTimeModel'),
   movieTimeModel = new MovieTimeModel();
 
@@ -19,15 +20,17 @@ var getMovieTime = function (req, res) {
         release: json[0].release,
         theater: []
       };
+      
       json.forEach(function (movie) {
-         var theater = {
-         };
+        var theater = {};
         if (movie_info.name_zh === movie.name_zh) {
-          theater.name = movie.theater_info.name;
-          theater.tel = movie.theater_info.tel;
-          theater.address = movie.theater_info.address;
-          theater.time = movie.movie_time;
-          movie_info.theater.push(theater);
+          if (!sugar.Object.isEmpty(movie.theater_info)) {
+            theater.name = movie.theater_info.name;
+            theater.tel = movie.theater_info.tel;
+            theater.address = movie.theater_info.address;
+            theater.time = movie.movie_time;
+            movie_info.theater.push(theater);
+          }
         } else {
           jsonResult.push(movie_info);
           movie_info = {
@@ -36,11 +39,13 @@ var getMovieTime = function (req, res) {
             release: movie.release,
             theater: []
           }; 
-          theater.theater.name = movie.theater_info.name;
-          theater.theater.tel = movie.theater_info.tel;
-          theater.address = movie.theater_info.address;
-          theater.theater.time = movie.movie_time;
-          movie_info.theater.push(theater_info);
+          if (!sugar.Object.isEmpty(movie.theater_info)) {
+            theater.theater.name = movie.theater_info.name;
+            theater.theater.tel = movie.theater_info.tel;
+            theater.address = movie.theater_info.address;
+            theater.theater.time = movie.movie_time;
+            movie_info.theater.push(theater_info);
+          }
         } 
       });
       jsonResult.push(movie_info);
@@ -88,10 +93,12 @@ var getMovieTimeAPI = function (data, callback) {
          var theater = {
          };
         if (movie_info.name_zh === movie.name_zh) {
-          theater.name = movie.theater_info.name;
-          theater.tel = movie.theater_info.tel;
-          theater.time = movie.movie_time;
-          movie_info.theater.push(theater);
+          if (!sugar.Object.isEmpty(movie.theater_info)) {
+            theater.name = movie.theater_info.name;
+            theater.tel = movie.theater_info.tel;
+            theater.time = movie.movie_time;
+            movie_info.theater.push(theater);
+          }
         } else {
           jsonResult.push(movie_info);
           movie_info = {
@@ -100,11 +107,14 @@ var getMovieTimeAPI = function (data, callback) {
             release: movie.release,
             theater: []
           }; 
-          theater.theater.name = movie.theater_info.name;
-          theater.theater.tel = movie.theater_info.tel;
-          theater.address = movie.theater_info.address;
-          theater.theater.time = movie.movie_time;
-          movie_info.theater.push(theater_info);
+
+          if (!sugar.Object.isEmpty(movie.theater_info)) {
+            theater.theater.name = movie.theater_info.name;
+            theater.theater.tel = movie.theater_info.tel;
+            theater.address = movie.theater_info.address;
+            theater.theater.time = movie.movie_time;
+            movie_info.theater.push(theater_info);
+          }
         } 
       });
       jsonResult.push(movie_info);

@@ -30,7 +30,7 @@ MovieTimeModel.prototype.createMovieTime = function (data, callback) {
         json = docs;
         json = JSON.parse(JSON.stringify(json));
       }
-      console.log(json);
+      //console.log(json);
       callback(json);
     }
   );

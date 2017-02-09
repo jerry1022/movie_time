@@ -12,6 +12,7 @@ var option_url = 'https://tw.movie.yahoo.com';
     rejectUnauthorized : false  // verify SSL certificate 
   },
   index = [],
+  pages = [1,2,3,4,5,6,7,8],
   cronJob = false;
 var theaterHash = { '南台電影城': '台南市中西區友愛街317號1樓',
   '國賓影城(台南國賓廣場)': '台南市東區中華東路一段66號3樓',
@@ -176,7 +177,41 @@ var crawler = function (cronJob) {
         }
       }); 
     },
-    crawler: ['get_index', 'rmOldData', function (result, cb) {
+    crawler_unreleased: function (cb) {
+      async.eachLimit(pages, 5, function (idx, callback) {
+        var query_url = 'https://tw.movies.yahoo.com/movie_comingsoon.html?p=' + idx;
+        needle.get(query_url, options, function (err, res) {
+          if (!err && res.statusCode === 200) {
+            var $ = cheerio.load(res.body);
+
+            $('div .text').each(function (i, elm) {
+              var $$ = cheerio.load(elm);
+              
+              var movies = {};
+              movies.name_zh = $$('h4').text();
+              movies.name_en = $$('h5').text();
+              movies.release = Date($$('span').text().split("：")[1]); 
+
+              movieTimeModel.createMovieTime(movies, function (json) {
+                //console.log(json);
+                return;
+              }); 
+            });
+          } else {
+            console.log(err);
+          }
+          callback();
+        });
+      }, function (err) {
+         if (err) {
+           console.log(err);
+           cb(err);
+         } else {
+           cb();
+         }
+      });
+    },
+    crawler: ['get_index', 'rmOldData', 'crawler_unreleased', function (result, cb) {
       async.eachLimit(index, 10, function (idx, callback) {
         var query_url = 'https://tw.movies.yahoo.com/movietime_result.html?id=' + idx;
         needle.get(query_url, options, function (err, res) {
@@ -186,9 +221,8 @@ var crawler = function (cronJob) {
             var name_zh = $('div .text.bulletin h4').text();
             //console.log($('div .text.bulletin h5').text());
             var name_en = $('div .text.bulletin h5').text();
-            //console.log($('div .text.bulletin p').text());
-            var release = $('div .text.bulletin p').text();
-
+//            console.log($('div .text.bulletin p span.dta').text());
+            var release = $('div .text.bulletin p span.dta').text();
             $('div .row-container').each(function (i, elm) {
               var movies = {};
               var theater_info = {};
@@ -202,7 +236,8 @@ var crawler = function (cronJob) {
               */
               movies.name_zh = name_zh;
               movies.name_en = name_en;
-              movies.release = Date(release.split(':')[1]); 
+              movies.release = Date(release.split('：')[1]); 
+
               var theaterInfo = theatersInfo[0].split(' ');
               var len = theaterInfo.length;
               theater_info.name = theaterInfo.slice(0, len - 2).join(' ');
