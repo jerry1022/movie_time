@@ -18,6 +18,7 @@ var getMovieTime = function (req, res) {
         name_zh: json[0].name_zh,
         name_en: json[0].name_en,
         release: json[0].release,
+        genre: json[0].genre,
         theater: []
       };
       
@@ -37,6 +38,7 @@ var getMovieTime = function (req, res) {
             name_zh: movie.name_zh,
             name_en: movie.name_en,
             release: movie.release,
+            genre: movie.genre,
             theater: []
           }; 
           if (movie.hasOwnProperty('theater_info')) {
@@ -91,6 +93,7 @@ var getMovieTimeAPI = function (data, callback) {
         name_zh: json[0].name_zh,
         name_en: json[0].name_en,
         release: json[0].release,
+        genre: json[0].genre,
         theater: []
       };
       json.forEach(function (movie) {
@@ -109,6 +112,7 @@ var getMovieTimeAPI = function (data, callback) {
             name_zh: movie.name_zh,
             name_en: movie.name_en,
             release: movie.release,
+            genre: movie.genre,
             theater: []
           }; 
 
@@ -150,6 +154,7 @@ var getTheaterMovies = function (req, res) {
           movie.name_zh = theater.name_zh;
           movie.name_en = theater.name_en;
           movie.release = theater.release;
+          movie.genre = theater.genre;
           movie.time = theater.movie_time;
           theater_info.movies.push(movie);
         } else {
@@ -163,6 +168,7 @@ var getTheaterMovies = function (req, res) {
           movie.name_zh = theater.name_zh;
           movie.name_en = theater.name_en;
           movie.release = theater.release;
+          movie.genre = theater.genre;
           movie.time = theater.movie_time;
           theater_info.movies.push(movie);
         } 
@@ -195,6 +201,7 @@ var getTheaterMoviesAPI = function (data, callback) {
           movie.name_zh = theater.name_zh;
           movie.name_en = theater.name_en;
           movie.release = theater.release;
+          movie.genre = theater.genre;
           movie.time = theater.movie_time;
           theater_info.movies.push(movie);
         } else {
@@ -208,6 +215,7 @@ var getTheaterMoviesAPI = function (data, callback) {
           movie.name_zh = theater.name_zh;
           movie.name_en = theater.name_en;
           movie.release = theater.release;
+          movie.genre = theater.genre;
           movie.time = theater.movie_time;
           theater_info.movies.push(movie);
         } 

@@ -9,7 +9,7 @@ var MovieTimeSchema = new db.Schema({
   name_zh: {type: String, require: true},
   name_en: {type: String},
   release: {type: Date},
-  genre: {type: String},
+  genre: {type: String, default: ''},
   theater_info: {},
   movie_time: {type: String},
   created_at: {type: Date, default: Date.now},
