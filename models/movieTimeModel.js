@@ -9,6 +9,7 @@ var MovieTimeSchema = new db.Schema({
   name_zh: {type: String, require: true},
   name_en: {type: String},
   release: {type: Date},
+  genre: {type: String},
   theater_info: {},
   movie_time: {type: String},
   created_at: {type: Date, default: Date.now},
@@ -39,6 +40,24 @@ MovieTimeModel.prototype.createMovieTime = function (data, callback) {
 
 MovieTimeModel.prototype.updateMovieTime = function (data, callback) {
    //TO-DO
+   var condition = {name_zh: data.name_zh},
+       update = {
+         $set: {genre: data.genre}
+       };
+
+   this.movieTimeModel.update(
+     condition,
+     update,
+     {multi: true}
+   )
+   .lean()
+   .exec(function (err) {
+     if (err) {
+       callback(err);
+     } else {
+       callback(null);
+     }
+   });
 };
 
 MovieTimeModel.prototype.getMovieTime = function (data, callback) {

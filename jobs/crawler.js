@@ -13,6 +13,7 @@ var option_url = 'https://tw.movie.yahoo.com';
   },
   index = [],
   pages = [1,2,3,4,5,6,7,8],
+  movieInfoIdx = {},
   cronJob = false;
 var theaterHash = { '南台電影城': '台南市中西區友愛街317號1樓',
   '國賓影城(台南國賓廣場)': '台南市東區中華東路一段66號3樓',
@@ -177,9 +178,67 @@ var crawler = function (cronJob) {
         }
       }); 
     },
-    crawler_unreleased: ['rmOldData', function (result, cb) {
-      async.eachLimit(pages, 5, function (idx, callback) {
-        var query_url = 'https://tw.movies.yahoo.com/movie_comingsoon.html?p=' + idx;
+   crawler: ['get_index', 'rmOldData', function (result, cb) {
+      async.eachLimit(index, 10, function (idx, callback) {
+        var query_url = 'https://tw.movies.yahoo.com/movietime_result.html?id=' + idx;
+        needle.get(query_url, options, function (err, res) {
+          if (!err && res.statusCode === 200) {
+            var $ = cheerio.load(res.body);
+            //console.log($('div .text.bulletin h4').text());
+            var name_zh = $('div .text.bulletin h4').text();
+            //console.log($('div .text.bulletin h5').text());
+            var name_en = $('div .text.bulletin h5').text();
+            //console.log($('div .text.bulletin p span.dta').text());
+            var release = $('div .text.bulletin p span.dta').text();
+
+            // build info hash for get genre 
+            movieInfoIdx[name_zh] = idx;
+
+            $('div .row-container').each(function (i, elm) {
+              var movies = {};
+              var theater_info = {};
+              theatersInfo = $(elm).text().trim().split(/\n/);
+              /*
+              text.trim().split(/\n/).forEach(function (t) {
+                if (t !== ' ') {
+                  movies.push(t);
+                }
+              });
+              */
+              movies.name_zh = name_zh;
+              movies.name_en = name_en;
+              movies.release = release;
+
+              var theaterInfo = theatersInfo[0].split(' ');
+              var len = theaterInfo.length;
+              theater_info.name = theaterInfo.slice(0, len - 2).join(' ');
+              theater_info.tel = theaterInfo[len-2];
+              theater_info.address = theaterHash[theater_info.name];
+              movies.theater_info = theater_info;
+              movies.movie_time = theatersInfo[3];
+              movieTimeModel.createMovieTime(movies, function (json) {
+                //console.log(json);
+                return;
+              }); 
+//              console.log(JSON.stringify(movies));
+            });
+          } else {
+            console.log(err);
+          }
+          callback();
+        });
+      }, function (err) {
+         if (err) {
+           console.log(err);
+           cb(err);
+         } else {
+           cb();
+         }
+      });
+    }],
+    crawler_unreleased: ['crawler', function (result, cb) {
+      async.eachLimit(pages, 5, function (page, callback) {
+        var query_url = 'https://tw.movies.yahoo.com/movie_comingsoon.html?p=' + page;
         needle.get(query_url, options, function (err, res) {
           if (!err && res.statusCode === 200) {
             var $ = cheerio.load(res.body);
@@ -188,10 +247,13 @@ var crawler = function (cronJob) {
               var $$ = cheerio.load(elm);
               
               var movies = {};
+              var idx = $$('h4 a').attr('href');
               movies.name_zh = $$('h4').text();
               movies.name_en = $$('h5').text();
-             // console.log($$('span.date span').text()); 
+              //console.log($$('span.date span').text()); 
               movies.release = $$('span.date span').text(); 
+              // build info hash for get genre 
+              movieInfoIdx[movies.name_zh] = idx;
 
               movieTimeModel.createMovieTime(movies, function (json) {
                 //console.log(json);
@@ -212,45 +274,25 @@ var crawler = function (cronJob) {
          }
       });
     }],
-    crawler: ['get_index', 'crawler_unreleased', function (result, cb) {
-      async.eachLimit(index, 10, function (idx, callback) {
-        var query_url = 'https://tw.movies.yahoo.com/movietime_result.html?id=' + idx;
+    crawler_genre: ['crawler_unreleased', function (result, cb) {
+      async.eachLimit(movieInfoIdx, 5, function (idx, callback) {
+        if (idx !== undefined && idx.includes('https')) {
+          idx = idx.split('=')[1];
+        }
+        var query_url = 'https://tw.movies.yahoo.com/movieinfo_main.html/id=' + idx;
         needle.get(query_url, options, function (err, res) {
           if (!err && res.statusCode === 200) {
             var $ = cheerio.load(res.body);
-            //console.log($('div .text.bulletin h4').text());
-            var name_zh = $('div .text.bulletin h4').text();
-            //console.log($('div .text.bulletin h5').text());
-            var name_en = $('div .text.bulletin h5').text();
-            //console.log($('div .text.bulletin p span.dta').text());
-            var release = $('div .text.bulletin p span.dta').text();
-            $('div .row-container').each(function (i, elm) {
-              var movies = {};
-              var theater_info = {};
-              theatersInfo = $(elm).text().trim().split(/\n/);
-              /*
-              text.trim().split(/\n/).forEach(function (t) {
-                if (t !== ' ') {
-                  movies.push(t);
-                }
-              });
-              */
-              movies.name_zh = name_zh;
-              movies.name_en = name_en;
-              movies.release = release; 
-
-              var theaterInfo = theatersInfo[0].split(' ');
-              var len = theaterInfo.length;
-              theater_info.name = theaterInfo.slice(0, len - 2).join(' ');
-              theater_info.tel = theaterInfo[len-2];
-              theater_info.address = theaterHash[theater_info.name];
-              movies.theater_info = theater_info;
-              movies.movie_time = theatersInfo[3];
-              movieTimeModel.createMovieTime(movies, function (json) {
-                //console.log(json);
+            var movies = {};
+            movies.name_zh = $('div .text.bulletin h4').text();
+            $('div .text.bulletin p span').each(function (i, elm) {
+              if (i != 3) return;
+              var $$ = cheerio.load(elm);
+              movies.genre = $$('.dta').text();
+              movieTimeModel.updateMovieTime(movies, function (json) {
+                //console.log(json)
                 return;
               }); 
-              console.log(JSON.stringify(movies));
             });
           } else {
             console.log(err);
