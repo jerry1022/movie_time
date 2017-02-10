@@ -4,11 +4,11 @@ search the movie time from yahoo movie
 1. install node
 2. run `npm install`
 3. crawler data from tw.movie.yahoo.com => run `node jobs/doCrawler.js`
-4. npm start
+4. crawler theater => run node jobs/doCrawlerTheater.js
+5. npm start
 
 
 demo 
-
 
 https://twmovietimes.herokuapp.com/movietime/getmovie/{movie_name}
 
