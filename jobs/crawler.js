@@ -136,7 +136,10 @@ var theaterHash = { '南台電影城': '台南市中西區友愛街317號1樓',
   '威尼斯影城': '桃園縣中壢市九和一街48號3樓',
   '埔里山明戲院': '南投縣埔里鎮中山路二段289號之1',
   '南投戲院': '南投縣南投市大同街87號',
-  '澎湖中興電影城': '澎湖縣馬公市文康街37號' };
+  '澎湖中興電影城': '澎湖縣馬公市文康街37號',
+  '頭份尚順威秀影城': '苗栗縣頭份鎮中央路105號7樓',
+  '中影屏東影城': '屏東縣屏東市民生路248號',
+  '台東秀泰影城': '台東市鐵花里5鄰新生路93號' };
 
 var crawler = function (cronJob) { 
   if (!cronJob) {
@@ -220,9 +223,7 @@ var crawler = function (cronJob) {
                 //console.log(json);
                 return;
               }); 
-              if (movies.name_zh === '分裂') {
-                console.log(movies);
-              }
+//              console.log(JSON.stringify(movies));
             });
           } else {
             console.log(err);
