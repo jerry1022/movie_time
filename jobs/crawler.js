@@ -220,7 +220,9 @@ var crawler = function (cronJob) {
                 //console.log(json);
                 return;
               }); 
-//              console.log(JSON.stringify(movies));
+              if (movies.name_zh === '分裂') {
+                console.log(movies);
+              }
             });
           } else {
             console.log(err);

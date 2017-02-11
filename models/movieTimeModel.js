@@ -39,7 +39,6 @@ MovieTimeModel.prototype.createMovieTime = function (data, callback) {
 
 
 MovieTimeModel.prototype.updateMovieTime = function (data, callback) {
-   //TO-DO
    var condition = {name_zh: data.name_zh},
        update = {
          $set: {genre: data.genre}
