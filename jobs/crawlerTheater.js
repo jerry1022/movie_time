@@ -2,6 +2,7 @@ var async = require('async'),
   needle = require('needle'),
   cheerio = require('cheerio'),
   schedule = require('node-schedule'),
+  fs = require('fs'),
   TheaterModel = require('../models/theaterModel'),
   theaterModel = new TheaterModel();
 
@@ -24,8 +25,9 @@ var crawler = function (cronJob) {
     });
   }
 
- var areaIndex = [0,1,2,3,10,11,12,13,14,16,17,18,19,20,21,22,23,24];
+ var areaIndex = [0,1,2,3,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];
  var theaters = [];
+ var theatersHash = {};
  async.auto({
    rmOldData: function (cb) {
      console.log('Remove old data');
@@ -55,6 +57,7 @@ var crawler = function (cronJob) {
                   theater.address = text;
                   theater.tel = tel;
                   theaters.push(theater);
+                  theatersHash[theater.name] = theater.address;
                   theater = {}
                 }
                 //console.log('text: %s, i: %s\n', text, i);
@@ -75,7 +78,13 @@ var crawler = function (cronJob) {
          }
       });
     }],
-    insertData: ['crawler', function (result, cb) {
+    writeHash: ['crawler', function (result, cb) {
+      var theaterHash = 'exports.theatersHash = ' + JSON.stringify(theatersHash) + ';';
+      fs.writeFile(__dirname + '/theaterHash.js', theaterHash, function (err) {
+        cb();
+      });
+    }],
+    insertData: ['writeHash', function (result, cb) {
       theaterModel.createTheater(theaters, function (err) {
         cb();
       });
@@ -100,7 +109,7 @@ var crawler = function (cronJob) {
 var startJob = function () {
   cronJob = true;
   console.log('Start crawler schedule Job');
-  schedule.scheduleJob('* * 2 * * *', function () {
+  schedule.scheduleJob('* * 1 * * *', function () {
     crawler(cronJob);    
   });
 };

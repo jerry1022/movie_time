@@ -2,6 +2,7 @@ var async = require('async'),
   needle = require('needle'),
   cheerio = require('cheerio'),
   schedule = require('node-schedule'),
+  CONSTANT = require('./theaterHash'),
   MovieTimeModel = require('../models/movieTimeModel'),
   movieTimeModel = new MovieTimeModel();
 
@@ -15,6 +16,7 @@ var option_url = 'https://tw.movie.yahoo.com';
   pages = [1,2,3,4,5,6,7,8],
   movieInfoIdx = {},
   cronJob = false;
+/*
 var theaterHash = { '南台電影城': '台南市中西區友愛街317號1樓',
   '國賓影城(台南國賓廣場)': '台南市東區中華東路一段66號3樓',
   '台南大遠百威秀影城': '台南市中西區公園路60號8樓',
@@ -140,6 +142,8 @@ var theaterHash = { '南台電影城': '台南市中西區友愛街317號1樓',
   '頭份尚順威秀影城': '苗栗縣頭份鎮中央路105號7樓',
   '中影屏東影城': '屏東縣屏東市民生路248號',
   '台東秀泰影城': '台東市鐵花里5鄰新生路93號' };
+*/
+var theaterHash = CONSTANT.theatersHash;
 
 var crawler = function (cronJob) { 
   if (!cronJob) {
