@@ -89,17 +89,20 @@ console.log(JSON.stringify(event));
               var replyToken = event.replyToken;
               console.log("userId:", user_id, replyToken);
               result.forEach(function (movie) {
-                var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n' + '上映日期:' + movie.release;
+                var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n上映日期:' + movie.release + '\n類型：'+ movie.genre;
 /*
                 event.reply(movie_info).then(function (data) {
 		  console.log('Success', data);
- 	        }).catch(function (error) {
+	        }).catch(function (error) {
 	          console.log('Error', error);
 	        });
 */
-                bot.push(user_id,  movie_info);
-                movie.theater.forEach(function (theater) {
-                  var theater_info = '戲院:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
+                bot.push(user_id,  movie_info).then(function (data) {
+                  movie.theater.forEach(function (theater) {
+                    var theater_info = '戲院:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
+                    bot.push(user_id, theater_info);
+                  }); 
+		});
 /*
                   event.reply(theater_info);//.then(function (data) {
 		    console.log('Success', data);
@@ -107,8 +110,6 @@ console.log(JSON.stringify(event));
 	            console.log('Error', error);
 	          });
 */
-                  bot.push(user_id, theater_info);
-                }); 
                 exStatus = 0;
               });
             }
@@ -130,7 +131,7 @@ console.log(JSON.stringify(event));
                   var theater_info = '戲院:'+ theater.name + '\n電話:'+ theater.tel;
                   bot.push(user_id, theater_info);
                   theater.movies.forEach(function (movie) {
-                    var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n上映日期:' + movie.release + '時刻表:' + movie.time;
+                    var movie_info = '片名:' + movie.name_zh + '(' + movie.name_en + ')\n上映日期:' + movie.release +'\n類型：'+ movie.genre +'\n時刻表:' + movie.time;
                     bot.push(user_id, movie_info);
                   });
                   exStatus = 0;
