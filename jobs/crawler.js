@@ -219,6 +219,10 @@ var crawler = function (cronJob) {
               var theaterInfo = theatersInfo[0].split(' ');
               var len = theaterInfo.length;
               theater_info.name = theaterInfo.slice(0, len - 2).join(' ');
+              // special case to crawler correct data
+              if (theater_info.name.includes('中影屏東影城')) {
+                theater_info.name = theater_info.name.split(' ')[0];
+              }
               theater_info.tel = theaterInfo[len-2];
               theater_info.address = theaterHash[theater_info.name];
               movies.theater_info = theater_info;
