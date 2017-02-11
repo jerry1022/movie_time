@@ -213,6 +213,7 @@ app.on('close', function (errno) {
 // ==================================================================================================
 
 require('./jobs/crawler.js').startJob();
+require('./jobs/crawlerTheater.js').startJob();
 
 var server = http.listen(process.env.PORT, function () {
   console.log('Express server listening on port %d in %s mode...', server.address().port, app.settings.env);
