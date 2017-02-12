@@ -24,6 +24,10 @@ var getMovieTime = function (req, res) {
       
       json.forEach(function (movie) {
         var theater = {};
+        if (movie_info.release === null) {
+           movie_info.name_en = movie.name_en;
+           movie_info.release = movie.release;
+        }
         if (movie_info.name_zh === movie.name_zh) {
           if (movie.hasOwnProperty('theater_info')) {
               theater.name = movie.theater_info.name;
@@ -83,7 +87,7 @@ var getMovieTimeAPI = function (data, callback) {
            {name_zh: new RegExp(movie, 'i')},
            {name_en: new RegExp(movie, 'i')}
           ]
-        }
+        },
        ]
      };
   }
@@ -99,6 +103,10 @@ var getMovieTimeAPI = function (data, callback) {
       json.forEach(function (movie) {
          var theater = {
          };
+        if (movie_info.release === null) {
+           movie_info.name_en = movie.name_en;
+           movie_info.release = movie.release;
+        }
         if (movie_info.name_zh === movie.name_zh) {
           if (movie.hasOwnProperty('theater_info')) {
               theater.name = movie.theater_info.name;
