@@ -68,13 +68,9 @@ var getGenreMovieTime = function (req, res) {
     movie = req.query.name,
     jsonResult = [];
 
-  movieTimeModel.getMovieTime({
-      $or: [
-       {genre: new RegExp(genre, "i")},
-       {name_en: new RegExp(movie, 'i')},
-       {name_zh: new RegExp(movie, 'i')}
-      ]
-      }, function (json) {
+  movieTimeModel.getMovieTime(
+    {genre: new RegExp(genre, "i")}
+      , function (json) {
     if (json !== null) {
       var movie_info = {
         name_zh: json[0].name_zh,

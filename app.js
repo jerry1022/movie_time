@@ -192,7 +192,7 @@ router.use(function (req, res, next) {
 router.post('/movietime/create', movietime.createMovie);
 router.get('/movietime/getmovie/:movie', movietime.getMovieTime);
 router.get('/movietime/gettheater/:theater', movietime.getTheaterMovies);
-router.get('/movietime/getmovie/getgenremovie', movietime.getGenreMovieTime);
+router.get('/movietime/getgenremovie', movietime.getGenreMovieTime);
 router.delete('/movietime/delete', movietime.deleteMovie);
 router.put('/movietime/update', movietime.updateMovie);
 
