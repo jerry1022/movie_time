@@ -16,6 +16,8 @@ https://twmovietimes.herokuapp.com/movietime/gettheater/{theater_name}
 
 https://twmovietimes.herokuapp.com/theater/gettheater?name={theater_name}&address={address}
 
+https://twmovietimes.herokuapp.com/movietime/getgenremovie?genre={genre}
+
 Enjoy it
 
 linebot @zti3761l add it to search taiwan movie time

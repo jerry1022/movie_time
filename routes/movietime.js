@@ -6,7 +6,7 @@ var
 var getMovieTime = function (req, res) {
   var movie = req.param('movie'),
     jsonResult = [];
-  
+
   movieTimeModel.getMovieTime({
       $or: [
        {name_zh: new RegExp(movie, "i")},
@@ -21,7 +21,7 @@ var getMovieTime = function (req, res) {
         genre: json[0].genre,
         theater: []
       };
-      
+
       json.forEach(function (movie) {
         var theater = {};
         if (movie_info.release === null) {
@@ -44,7 +44,7 @@ var getMovieTime = function (req, res) {
             release: movie.release,
             genre: movie.genre,
             theater: []
-          }; 
+          };
           if (movie.hasOwnProperty('theater_info')) {
               console.log(movie);
               theater.name = movie.theater_info.name;
@@ -53,7 +53,7 @@ var getMovieTime = function (req, res) {
               theater.time = movie.movie_time;
               movie_info.theater.push(theater);
           }
-        } 
+        }
       });
       jsonResult.push(movie_info);
       res.status(200).json(jsonResult);
@@ -62,6 +62,69 @@ var getMovieTime = function (req, res) {
     }
   });
 };
+
+var getGenreMovieTime = function (req, res) {
+  var genre = req.query.genre,
+    movie = req.query.name,
+    jsonResult = [];
+
+  movieTimeModel.getMovieTime({
+      $or: [
+       {genre: new RegExp(genre, "i")},
+       {name_en: new RegExp(movie, 'i')},
+       {name_zh: new RegExp(movie, 'i')}
+      ]
+      }, function (json) {
+    if (json !== null) {
+      var movie_info = {
+        name_zh: json[0].name_zh,
+        name_en: json[0].name_en,
+        release: json[0].release,
+        genre: json[0].genre,
+        theater: []
+      };
+
+      json.forEach(function (movie) {
+        var theater = {};
+        if (movie_info.release === null) {
+           movie_info.name_en = movie.name_en;
+           movie_info.release = movie.release;
+        }
+        if (movie_info.name_zh === movie.name_zh) {
+          if (movie.hasOwnProperty('theater_info')) {
+              theater.name = movie.theater_info.name;
+              theater.tel = movie.theater_info.tel;
+              theater.address = movie.theater_info.address;
+              theater.time = movie.movie_time;
+              movie_info.theater.push(theater);
+          }
+        } else {
+          jsonResult.push(movie_info);
+          movie_info = {
+            name_zh: movie.name_zh,
+            name_en: movie.name_en,
+            release: movie.release,
+            genre: movie.genre,
+            theater: []
+          };
+          if (movie.hasOwnProperty('theater_info')) {
+              console.log(movie);
+              theater.name = movie.theater_info.name;
+              theater.tel = movie.theater_info.tel;
+              theater.address = movie.theater_info.address;
+              theater.time = movie.movie_time;
+              movie_info.theater.push(theater);
+          }
+        }
+      });
+      jsonResult.push(movie_info);
+      res.status(200).json(jsonResult);
+    } else {
+      res.status(200).json([]);
+    }
+  });
+};
+
 
 var getMovieTimeAPI = function (data, callback) {
   var movie = data.movie,
@@ -122,7 +185,7 @@ var getMovieTimeAPI = function (data, callback) {
             release: movie.release,
             genre: movie.genre,
             theater: []
-          }; 
+          };
 
           if (movie.hasOwnProperty('theater_info')) {
               theater.name = movie.theater_info.name;
@@ -131,7 +194,7 @@ var getMovieTimeAPI = function (data, callback) {
               theater.time = movie.movie_time;
               movie_info.theater.push(theater);
           }
-        } 
+        }
       });
       jsonResult.push(movie_info);
       callback(jsonResult);
@@ -144,7 +207,7 @@ var getMovieTimeAPI = function (data, callback) {
 
 var getTheaterMovies = function (req, res) {
   var theater = req.param('theater'),
-    jsonResult = []; 
+    jsonResult = [];
   movieTimeModel.getTheaterMovies({
     "theater_info.name": new RegExp(theater, "i")
       }, function (json) {
@@ -172,14 +235,14 @@ var getTheaterMovies = function (req, res) {
             tel: theater.theater_info.tel,
             address: theater.theater_info.address,
             movies: []
-          }; 
+          };
           movie.name_zh = theater.name_zh;
           movie.name_en = theater.name_en;
           movie.release = theater.release;
           movie.genre = theater.genre;
           movie.time = theater.movie_time;
           theater_info.movies.push(movie);
-        } 
+        }
       });
       jsonResult.push(theater_info);
       res.status(200).json(jsonResult);
@@ -191,7 +254,7 @@ var getTheaterMovies = function (req, res) {
 
 var getTheaterMoviesAPI = function (data, callback) {
   var theater = data.theater,
-    jsonResult = []; 
+    jsonResult = [];
   movieTimeModel.getTheaterMovies({
     "theater_info.name": new RegExp(theater, "i")
       }, function (json) {
@@ -219,14 +282,14 @@ var getTheaterMoviesAPI = function (data, callback) {
             tel: theater.theater_info.tel,
             address: theater.theater_info.address,
             movies: []
-          }; 
+          };
           movie.name_zh = theater.name_zh;
           movie.name_en = theater.name_en;
           movie.release = theater.release;
           movie.genre = theater.genre;
           movie.time = theater.movie_time;
           theater_info.movies.push(movie);
-        } 
+        }
       });
       jsonResult.push(theater_info);
       callback(jsonResult);
@@ -252,6 +315,7 @@ var updateMovie = function (req, res) {
 module.exports = {
   getMovieTime: getMovieTime,
   getTheaterMovies: getTheaterMovies,
+  getGenreMovieTime: getGenreMovieTime,
   createMovie: createMovie,
   deleteMovie: deleteMovie,
   updateMovie: updateMovie,

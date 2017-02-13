@@ -12,11 +12,11 @@ var express = require('express'),
   config = readConfig('./config/default.json'),
   linebot = require('linebot');
 //=================================================================================================
-//routes import 
+//routes import
 //================================================================================================
 var movietime = require('./routes/movietime');
 var theater = require('./routes/theater');
-  
+
 // ================================================================================================
 // set working directory is this script basedir
 // ===============================================================================================+
@@ -43,14 +43,14 @@ var bot = linebot({
 
 var linebotParser = bot.parser();
 
-app.post('/', linebotParser); 
+app.post('/', linebotParser);
 
 var exStatus = 0;
 var area = '';
 bot.on('message', function (event) {
 console.log(JSON.stringify(event));
         if (event.message.text === '看電影') {
-	   exStatus = 1; 
+	   exStatus = 1;
            event.reply("請輸入要查的區域(ex: 台北 或 全部)").then(function (data) {
 	     console.log('Success', data);
  	   }).catch(function (error) {
@@ -65,9 +65,9 @@ console.log(JSON.stringify(event));
 	     console.log('Error', error);
 	   });
         } else if (exStatus === 1) {
-	   exStatus = 3; 
+	   exStatus = 3;
            if (event.message.text !== '全部') {
-              area = event.message.text;  
+              area = event.message.text;
            }
            event.reply("請輸入要看的電影").then(function (data) {
 	     console.log('Success', data);
@@ -101,7 +101,7 @@ console.log(JSON.stringify(event));
                   movie.theater.forEach(function (theater) {
                     var theater_info = '戲院:' + theater.name + '\n電話:' + theater.tel + '\n' + '時刻表:' + theater.time;
                     bot.push(user_id, theater_info);
-                  }); 
+                  });
 		});
 /*
                   event.reply(theater_info);//.then(function (data) {
@@ -146,7 +146,7 @@ console.log(JSON.stringify(event));
 	  }).catch(function (error) {
                 exStatus = 0;
 		console.log('Error', error);
-	  });       
+	  });
         }
 });
 
@@ -181,17 +181,18 @@ router.use(function (req, res, next) {
       sign: req.get('sign'),
       token_pass: req.get('token_pass'),
     };
-  
+
     next();
 });
 
 
 // ===================================================================
-// API 
+// API
 // ======================================================================
 router.post('/movietime/create', movietime.createMovie);
 router.get('/movietime/getmovie/:movie', movietime.getMovieTime);
 router.get('/movietime/gettheater/:theater', movietime.getTheaterMovies);
+router.get('/movietime/getmovie/getgenremovie', movietime.getGenreMovieTime);
 router.delete('/movietime/delete', movietime.deleteMovie);
 router.put('/movietime/update', movietime.updateMovie);
 
@@ -203,7 +204,7 @@ router.get('/theater/gettheater', theater.getTheater);
 app.on('close', function (errno) {
   require('./models/db').disconnect(
     function (err) {
-       console.log(err); 
+       console.log(err);
     });
 });
 
@@ -215,6 +216,6 @@ app.on('close', function (errno) {
 require('./jobs/crawler.js').startJob();
 require('./jobs/crawlerTheater.js').startJob();
 
-var server = http.listen(process.env.PORT, function () {
+var server = http.listen(process.env.PORT || 3001, function () {
   console.log('Express server listening on port %d in %s mode...', server.address().port, app.settings.env);
 });
